@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS card(
 
 
 -- Inserts
-LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/action_card_list.csv"
+LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/action_card_list.csv"
 INTO TABLE card
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
@@ -58,7 +58,7 @@ IGNORE 1 LINES
 (card_name, category, rarity, card_description)
 SET card_uuid = UUID();
 
-LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/chapter_card_list.csv"
+LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/chapter_card_list.csv"
 INTO TABLE chapter
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
@@ -66,7 +66,7 @@ IGNORE 1 LINES
 (chapter_name, chapter_act, chapter_type, chapter_description, chapter_effect)
 SET chapter_uuid = UUID();
 
-LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/enemy_list.csv"
+LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/enemy_list.csv"
 INTO TABLE enemy
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
