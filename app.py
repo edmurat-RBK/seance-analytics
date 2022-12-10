@@ -1,18 +1,18 @@
 import configparser
 from flask import Flask, jsonify
 from flask_mysqldb import MySQL
-from waitress import serve
+import os
 
 
 config = configparser.ConfigParser()
 config.read("config.ini")
 
 app = Flask(__name__)
-app.config['MYSQL_HOST'] = config["MySQL"]["host"]
-app.config['MYSQL_PORT'] = config["MySQL"].getint("port",3306)
-app.config['MYSQL_USER'] = config["MySQL"]["user"]
-app.config['MYSQL_PASSWORD'] = config["MySQL"]["password"]
-app.config['MYSQL_DB'] = config["MySQL"]["schema"]
+app.config['MYSQL_HOST'] = os.getenv("DATABASE_HOST")
+app.config['MYSQL_PORT'] = os.getenv("DATABASE_PORT")
+app.config['MYSQL_USER'] = os.getenv("DATABASE_USER")
+app.config['MYSQL_PASSWORD'] = os.getenv("DATABASE_PASSWORD")
+app.config['MYSQL_DB'] = os.getenv("DATABASE_SCHEMA")
 
 database = MySQL(app)
 
@@ -48,7 +48,4 @@ def read_query_from(path, kwargs = {}):
 
 
 if __name__ == "__main__":
-    if config['Default'].getboolean("debug",False):
-        app.run(debug=True)
-    else:
-        serve(app, host="0.0.0.0", port=80)
+    app.run(debug=True)
