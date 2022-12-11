@@ -86,7 +86,7 @@ SET chapter_uuid = (
 CREATE TABLE IF NOT EXISTS session_launched(
     session_uuid BINARY(16),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
-    is_dev_build BOOL DEFAULT FALSE,
+    dev_build BOOL DEFAULT FALSE,
     CONSTRAINT PK_session_launched PRIMARY KEY (session_uuid)
 );
 
@@ -111,11 +111,11 @@ CREATE TABLE IF NOT EXISTS game_stopped(
 );
 
 CREATE TABLE IF NOT EXISTS player_connected(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     character_class ENUM("Warrior","Mage","Rogue"),
-    CONSTRAINT PK_player_connected PRIMARY KEY (game_uuid,session_uuid),
+    CONSTRAINT PK_player_connected PRIMARY KEY (session_uuid, game_uuid),
     CONSTRAINT FK_player_connected_game_started FOREIGN KEY (game_uuid) REFERENCES game_started(game_uuid),
     CONSTRAINT FK_player_connected_session_launched FOREIGN KEY (session_uuid) REFERENCES session_launched(session_uuid)
 );
@@ -133,74 +133,80 @@ CREATE TABLE IF NOT EXISTS chapter_revealed(
 CREATE TABLE IF NOT EXISTS chapter_resolved(
     game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
-    start_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
+    event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     CONSTRAINT PK_chapter_resolved PRIMARY KEY (game_uuid, chapter_index),
     CONSTRAINT FK_chapter_resolved_chapter_revealed FOREIGN KEY (game_uuid, chapter_index) REFERENCES chapter_revealed(game_uuid, chapter_index)
 );
 
 CREATE TABLE IF NOT EXISTS player_turn(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
-    player_life TINYINT UNSIGNED,
+    player_health TINYINT UNSIGNED,
     player_armor TINYINT UNSIGNED,
-    CONSTRAINT PK_player_turn PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index),
-    CONSTRAINT FK_player_turn_chapter_revealed FOREIGN KEY (game_uuid,chapter_index) REFERENCES chapter_revealed(game_uuid,chapter_index),
-    CONSTRAINT FK_player_turn_player_connection FOREIGN KEY (session_uuid) REFERENCES session_launched(session_uuid)
+    CONSTRAINT PK_player_turn PRIMARY KEY (session_uuid, game_uuid, chapter_index, turn_index),
+    CONSTRAINT FK_player_turn_player_connection FOREIGN KEY (session_uuid) REFERENCES session_launched(session_uuid),
+    CONSTRAINT FK_player_turn_chapter_revealed FOREIGN KEY (game_uuid,chapter_index) REFERENCES chapter_revealed(game_uuid,chapter_index)
 );
 
 CREATE TABLE IF NOT EXISTS card_drew(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
+    card_index TINYINT UNSIGNED,
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     card_uuid BINARY(16),
-    CONSTRAINT PK_card_drew PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index, card_uuid),
+    CONSTRAINT PK_card_drew PRIMARY KEY (session_uuid, game_uuid, chapter_index, turn_index, card_index),
+    CONSTRAINT FK_card_drew_player_turn FOREIGN KEY (session_uuid, game_uuid, chapter_index, turn_index) REFERENCES player_turn(session_uuid, game_uuid, chapter_index, turn_index),
     CONSTRAINT FK_card_drew_card FOREIGN KEY (card_uuid) REFERENCES card(card_uuid)
 );
 
 CREATE TABLE IF NOT EXISTS card_played(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
+    card_index TINYINT UNSIGNED,
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     card_uuid BINARY(16),
-    CONSTRAINT PK_card_played PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index, card_uuid),
+    CONSTRAINT PK_card_played PRIMARY KEY (session_uuid, game_uuid, chapter_index, turn_index, card_index),
+    CONSTRAINT FK_card_drew_player_turn FOREIGN KEY (session_uuid, game_uuid, chapter_index, turn_index) REFERENCES player_turn(session_uuid, game_uuid, chapter_index, turn_index),
     CONSTRAINT FK_card_played_card_drew FOREIGN KEY (card_uuid) REFERENCES card_drew(card_uuid)
 );
 
 CREATE TABLE IF NOT EXISTS card_discarded(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
+    card_index TINYINT UNSIGNED,
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     card_uuid BINARY(16),
-    CONSTRAINT PK_card_discarded PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index, card_uuid),
+    CONSTRAINT PK_card_discarded PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index, card_index),
+    CONSTRAINT FK_card_drew_player_turn FOREIGN KEY (session_uuid, game_uuid, chapter_index, turn_index) REFERENCES player_turn(session_uuid, game_uuid, chapter_index, turn_index),
     CONSTRAINT FK_card_discarded_card_drew FOREIGN KEY (card_uuid) REFERENCES card_drew(card_uuid)
 );
 
 CREATE TABLE IF NOT EXISTS player_death(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     CONSTRAINT PK_player_death PRIMARY KEY (game_uuid,session_uuid, chapter_index, turn_index),
-    CONSTRAINT FK_player_death_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
+    CONSTRAINT FK_player_death_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(session_uuid, game_uuid, chapter_index, turn_index)
 );
 
 CREATE TABLE IF NOT EXISTS player_cheated(
-    game_uuid BINARY(16),
     session_uuid BINARY(16),
+    game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
     cheat_type ENUM("CardOnKnees","DiceRoll"),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     CONSTRAINT PK_player_cheat PRIMARY KEY (game_uuid, session_uuid, chapter_index, turn_index, cheat_type),
-    CONSTRAINT FK_player_cheat_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn (game_uuid, session_uuid, chapter_index, turn_index)
+    CONSTRAINT FK_player_cheat_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
 );
