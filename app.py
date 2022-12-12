@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 
 
-dev_mode = True
+dev_mode = False
 
 app = Flask(__name__)
 
