@@ -5,5 +5,5 @@ VALUES (
     {chapterIndex},
     {turnIndex},
     {cardIndex},
-    {cardUuid}
+    UUID_TO_BIN("{cardUuid}")
 );
