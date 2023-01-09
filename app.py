@@ -54,6 +54,15 @@ def endpoint_chapter(version):
             return get_chapter()
         else:
             return "Unknown version"
+        
+@app.route('/<version>/register/device', methods=['POST'])
+def endpoint_register_device(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_device(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
 
 @app.route('/<version>/event/session_launched', methods=['POST'])
 def endpoint_session_launched(version):
@@ -196,7 +205,26 @@ def get_chapter():
         cursor.execute(query)
         result = cursor.fetchall()
         return jsonify(result)
-    
+
+def insert_device(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "deviceUuid": data["deviceUuid"],
+            "deviceModel": data["deviceModel"],
+            "deviceName": data["deviceName"],
+            "operatingSystem": data["operatingSystem"],
+            "graphicsName": data["graphicsName"],
+            "graphicsVersion": data["graphicsVersion"],
+            "graphicsMemory": data["graphicsMemory"],
+            "processorType": data["processorType"],
+            "processorCount": data["processorCount"],
+            "processorFrequency": data["processorFrequency"],
+            "memorySize": data["memorySize"]
+        }
+        query = read_query_from_file("sql/insert/device_register.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+
 def insert_session_launched(data):
     with database.connection.cursor() as cursor:
         values = {
@@ -250,7 +278,7 @@ def insert_chapter_revealed(data):
         values = {
             "gameUuid": data["gameUuid"],
             "chapterIndex": data["chapterIndex"],
-            "chapterUuid": data["chapterUuid"]
+            "chapterName": data["chapterName"]
         }
         query = read_query_from_file("sql/insert/chapter_revealed.sql",values)
         cursor.execute(query)

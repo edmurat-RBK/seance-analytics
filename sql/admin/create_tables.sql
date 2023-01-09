@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS game_stopped;
 DROP TABLE IF EXISTS game_started;
 DROP TABLE IF EXISTS session_exited;
 DROP TABLE IF EXISTS session_launched;
+-- DROP TABLE IF EXISTS device_register;
 
 DROP TABLE IF EXISTS card;
 DROP TABLE IF EXISTS enemy;
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS card(
 
 
 -- Inserts
-LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/action_card_list.csv"
+LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/action_card_list.csv"
 INTO TABLE card
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
@@ -58,7 +59,7 @@ IGNORE 1 LINES
 (card_name, category, rarity, card_description)
 SET card_uuid = UUID();
 
-LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/chapter_card_list.csv"
+LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/chapter_card_list.csv"
 INTO TABLE chapter
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
@@ -66,7 +67,7 @@ IGNORE 1 LINES
 (chapter_name, chapter_act, chapter_type, chapter_description, chapter_effect)
 SET chapter_uuid = UUID();
 
-LOAD DATA LOCAL INFILE "D:/Projets/seance-analytics/static_data/enemy_list.csv"
+LOAD DATA LOCAL INFILE "D:/edmurat/seance-analytics/static_data/enemy_list.csv"
 INTO TABLE enemy
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'
@@ -83,11 +84,30 @@ SET chapter_uuid = (
 
 
 -- Tables
+CREATE TABLE IF NOT EXISTS device_register(
+    device_uuid BINARY(16),
+    device_model VARCHAR(128),
+    device_name VARCHAR(128),
+    operating_system VARCHAR(128),
+    graphics_name VARCHAR(128),
+    graphics_version VARCHAR(128),
+    graphics_memory INT,
+    processor_type VARCHAR(128),
+    processor_count INT,
+    processor_frequency INT,
+    memory_size INT,
+    register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    CONSTRAINT PK_device_register PRIMARY KEY (device_uuid)
+);
+
 CREATE TABLE IF NOT EXISTS session_launched(
     session_uuid BINARY(16),
+    device_uuid BINARY(16),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     dev_build BOOL DEFAULT FALSE,
-    CONSTRAINT PK_session_launched PRIMARY KEY (session_uuid)
+    CONSTRAINT PK_session_launched PRIMARY KEY (session_uuid),
+    CONSTRAINT FK session_launched_device_register FOREIGN KEY (device_uuid) REFERENCES device_register(device_uuid)
 );
 
 CREATE TABLE IF NOT EXISTS session_exited(
