@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS session_launched(
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     dev_build BOOL DEFAULT FALSE,
     CONSTRAINT PK_session_launched PRIMARY KEY (session_uuid),
-    CONSTRAINT FK session_launched_device_register FOREIGN KEY (device_uuid) REFERENCES device_register(device_uuid)
+    CONSTRAINT FK_session_launched_device_register FOREIGN KEY (device_uuid) REFERENCES device_register(device_uuid)
 );
 
 CREATE TABLE IF NOT EXISTS session_exited(
