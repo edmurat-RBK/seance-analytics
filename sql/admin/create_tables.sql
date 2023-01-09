@@ -85,7 +85,7 @@ SET chapter_uuid = (
 
 -- Tables
 CREATE TABLE IF NOT EXISTS device_register(
-    device_uuid BINARY(16),
+    device_id CHAR(40),
     device_model VARCHAR(128),
     device_name VARCHAR(128),
     operating_system VARCHAR(128),
@@ -98,16 +98,16 @@ CREATE TABLE IF NOT EXISTS device_register(
     memory_size INT,
     register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
     last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-    CONSTRAINT PK_device_register PRIMARY KEY (device_uuid)
+    CONSTRAINT PK_device_register PRIMARY KEY (device_id)
 );
 
 CREATE TABLE IF NOT EXISTS session_launched(
     session_uuid BINARY(16),
-    device_uuid BINARY(16),
+    device_id BINARY(16),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     dev_build BOOL DEFAULT FALSE,
     CONSTRAINT PK_session_launched PRIMARY KEY (session_uuid),
-    CONSTRAINT FK_session_launched_device_register FOREIGN KEY (device_uuid) REFERENCES device_register(device_uuid)
+    CONSTRAINT FK_session_launched_device_register FOREIGN KEY (device_id) REFERENCES device_register(device_id)
 );
 
 CREATE TABLE IF NOT EXISTS session_exited(

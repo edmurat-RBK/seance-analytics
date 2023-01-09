@@ -1,6 +1,6 @@
-INSERT INTO session_launched(session_uuid,dev_build)
+INSERT INTO session_launched(session_uuid,device_id,dev_build)
 VALUES (
     UUID_TO_BIN("{sessionUuid}"), 
-    UUID_TO_BIN("{deviceUuid}"), 
+    "{deviceId}", 
     {devBuild}
 );

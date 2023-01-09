@@ -1,5 +1,5 @@
 INSERT INTO device_register(
-    device_uuid,
+    device_id,
     device_model,
     device_name,
     operating_system,
@@ -12,7 +12,7 @@ INSERT INTO device_register(
     memory_size
 )
 VALUES (
-    UUID_TO_BIN("{deviceUuid}"),
+    "{deviceId}",
     "{deviceModel}",
     "{deviceName}",
     "{operatingSystem}",

@@ -209,7 +209,7 @@ def get_chapter():
 def insert_device(data):
     with database.connection.cursor() as cursor:
         values = {
-            "deviceUuid": data["deviceUuid"],
+            "deviceId": data["deviceId"],
             "deviceModel": data["deviceModel"],
             "deviceName": data["deviceName"],
             "operatingSystem": data["operatingSystem"],
@@ -229,7 +229,7 @@ def insert_session_launched(data):
     with database.connection.cursor() as cursor:
         values = {
             "sessionUuid": data["sessionUuid"],
-            "deviceUuid": data["deviceUuid"],
+            "deviceId": data["deviceId"],
             "devBuild": data["devBuild"]
         }
         query = read_query_from_file("sql/insert/session_launched.sql",values)
