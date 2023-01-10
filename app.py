@@ -64,6 +64,14 @@ def endpoint_register_device(version):
         else:
             return "Unknown version"
 
+@app.route('/<version>/event', methods=['GET'])
+def endpoint_event(version):
+    if request.method == "GET":
+        if version == "v1":
+            return get_event()
+        else:
+            return "Unknown version"
+
 @app.route('/<version>/event/session_launched', methods=['POST'])
 def endpoint_session_launched(version):
     if request.method == "POST":
@@ -206,6 +214,28 @@ def get_chapter():
         result = cursor.fetchall()
         return jsonify(result)
 
+def get_event():
+    with database.connection.cursor() as cursor:
+        query = read_query_from_file("sql/select/event.sql")
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return query_to_table(result,["Event UUID","Event time","Event type"])
+        
+def query_to_table(data, headers):
+    out = "<html><table>"
+    out += "<tr>"
+    for head in headers:
+        out += f"<th>{head}</th>"
+    out += "</tr>"
+    for line in data:
+        out += "<tr>"
+        for cell in line:    
+            out += f"<td>{cell}</td>"
+        out += "</tr>"
+    out += "</table></html>"
+    return out
+    
+
 def insert_device(data):
     with database.connection.cursor() as cursor:
         values = {
@@ -317,7 +347,7 @@ def insert_card_drew(data):
             "chapterIndex": data["chapterIndex"],
             "turnIndex": data["turnIndex"],
             "cardIndex": data["cardIndex"],
-            "cardUuid": data["cardUuid"]
+            "cardName": data["cardName"]
         }
         query = read_query_from_file("sql/insert/card_drew.sql",values)
         cursor.execute(query)

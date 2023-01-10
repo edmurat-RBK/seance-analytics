@@ -5,5 +5,9 @@ VALUES (
     {chapterIndex},
     {turnIndex},
     {cardIndex},
-    UUID_TO_BIN("{cardUuid}")
+    (
+        SELECT card_uuid
+        FROM card
+        WHERE card_name = "{cardName}"
+    )
 );
