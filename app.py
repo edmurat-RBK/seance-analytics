@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_mysqldb import MySQL
 
 
-dev_mode = False
+dev_mode = True
 
 app = Flask(__name__)
 
@@ -171,6 +171,15 @@ def endpoint_card_discarded(version):
         else:
             return "Unknown version"
 
+@app.route('/<version>/event/reward_picked', methods=['POST'])
+def endpoint_reward_picked(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_reward_picked(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
+        
 @app.route('/<version>/event/player_death', methods=['POST'])
 def endpoint_player_death(version):
     if request.method == "POST":
@@ -189,6 +198,32 @@ def endpoint_player_cheated(version):
         else:
             return "Unknown version"
 
+@app.route('/<version>/event/camera_swapped', methods=['POST'])
+def endpoint_camera_swapped(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_camera_swapped(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
+
+@app.route('/<version>/event/mouse_clicked', methods=['POST'])
+def endpoint_mouse_clicked(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_mouse_clicked(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
+
+@app.route('/<version>/event/mouse_dragged', methods=['POST'])
+def endpoint_mouse_dragged(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_mouse_dragged(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
 
 
 #endregion
@@ -235,6 +270,7 @@ def query_to_table(data, headers):
     out += "</table></html>"
     return out
     
+
 
 def insert_device(data):
     with database.connection.cursor() as cursor:
@@ -361,7 +397,7 @@ def insert_card_played(data):
             "chapterIndex": data["chapterIndex"],
             "turnIndex": data["turnIndex"],
             "cardIndex": data["cardIndex"],
-            "cardUuid": data["cardUuid"]
+            "cardName": data["cardName"]
         }
         query = read_query_from_file("sql/insert/card_played.sql",values)
         cursor.execute(query)
@@ -375,9 +411,21 @@ def insert_card_discarded(data):
             "chapterIndex": data["chapterIndex"],
             "turnIndex": data["turnIndex"],
             "cardIndex": data["cardIndex"],
-            "cardUuid": data["cardUuid"]
+            "cardName": data["cardName"]
         }
         query = read_query_from_file("sql/insert/card_discarded.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+
+def insert_reward_picked(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "sessionUuid": data["sessionUuid"],
+            "gameUuid": data["gameUuid"],
+            "chapterIndex": data["chapterIndex"],
+            "cardName": data["cardName"]
+        }
+        query = read_query_from_file("sql/insert/reward_picked.sql",values)
         cursor.execute(query)
         database.connection.commit()
 
@@ -403,6 +451,46 @@ def insert_player_cheated(data):
             "cheatType": data["cheatType"]
         }
         query = read_query_from_file("sql/insert/player_cheated.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+        
+def insert_camera_swapped(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "sessionUuid": data["sessionUuid"],
+            "gameUuid": data["gameUuid"],
+            "startCamera": data["startCamera"],
+            "endCamera": data["endCamera"]
+        }
+        query = read_query_from_file("sql/insert/camera_swapped.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+
+def insert_mouse_clicked(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "sessionUuid": data["sessionUuid"],
+            "gameUuid": data["gameUuid"],
+            "xPosition": data["xPosition"],
+            "yPosition": data["yPosition"],
+            "camera": data["camera"]
+        }
+        query = read_query_from_file("sql/insert/mouse_clicked.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+
+def insert_mouse_dragged(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "sessionUuid": data["sessionUuid"],
+            "gameUuid": data["gameUuid"],
+            "xStartPosition": data["xStartPosition"],
+            "yStartPosition": data["yStartPosition"],
+            "xEndPosition": data["xEndPosition"],
+            "yEndPosition": data["yEndPosition"],
+            "startCamera": data["startCamera"]
+        }
+        query = read_query_from_file("sql/insert/mouse_dragged.sql",values)
         cursor.execute(query)
         database.connection.commit()
 

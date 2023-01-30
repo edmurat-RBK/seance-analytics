@@ -3,8 +3,8 @@ VALUES (
     UUID_TO_BIN("{gameUuid}"),
     {chapterIndex},
     (
-        SELECT chapter_uuid
+        SELECT uuid
         FROM chapter
-        WHERE chapter_name = "{chapterName}"
+        WHERE name = "{chapterName}"
     )
 );

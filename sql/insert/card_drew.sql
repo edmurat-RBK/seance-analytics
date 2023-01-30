@@ -6,8 +6,8 @@ VALUES (
     {turnIndex},
     {cardIndex},
     (
-        SELECT card_uuid
+        SELECT uuid
         FROM card
-        WHERE card_name = "{cardName}"
+        WHERE name = "{cardName}"
     )
 );
