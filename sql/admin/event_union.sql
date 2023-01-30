@@ -28,6 +28,8 @@ FROM (
 	SELECT event_uuid, event_time, "Card discarded" AS event_type FROM card_discarded
 	UNION
 	SELECT event_uuid, event_time, "Player cheated" AS event_type FROM player_cheated
+    UNION
+	SELECT event_uuid, event_time, "Cheat detected" AS event_type FROM cheat_detected
 	UNION
 	SELECT event_uuid, event_time, "Player death" AS event_type FROM player_death
 ) AS `Events`
