@@ -198,6 +198,15 @@ def endpoint_player_cheated(version):
         else:
             return "Unknown version"
 
+@app.route('/<version>/event/cheat_detected', methods=['POST'])
+def endpoint_cheat_detected(version):
+    if request.method == "POST":
+        if version == "v1":
+            insert_cheat_detected(request.form)
+            return "Insertion complete"
+        else:
+            return "Unknown version"
+
 @app.route('/<version>/event/camera_swapped', methods=['POST'])
 def endpoint_camera_swapped(version):
     if request.method == "POST":
@@ -451,6 +460,19 @@ def insert_player_cheated(data):
             "cheatType": data["cheatType"]
         }
         query = read_query_from_file("sql/insert/player_cheated.sql",values)
+        cursor.execute(query)
+        database.connection.commit()
+        
+def insert_cheat_detected(data):
+    with database.connection.cursor() as cursor:
+        values = {
+            "sessionUuid": data["sessionUuid"],
+            "gameUuid": data["gameUuid"],
+            "chapterIndex": data["chapterIndex"],
+            "turnIndex": data["turnIndex"],
+            "cheatType": data["cheatType"]
+        }
+        query = read_query_from_file("sql/insert/cheat_detected.sql",values)
         cursor.execute(query)
         database.connection.commit()
         

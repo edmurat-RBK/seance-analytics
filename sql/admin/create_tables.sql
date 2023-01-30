@@ -2,9 +2,10 @@
 DROP TABLE IF EXISTS mouse_dragged;
 DROP TABLE IF EXISTS mouse_clicked;
 DROP TABLE IF EXISTS camera_swapped;
+DROP TABLE IF EXISTS cheat_detected;
 DROP TABLE IF EXISTS player_cheated;
 DROP TABLE IF EXISTS player_death;
-DROP TABLE IF EXISTS picked_reward;
+DROP TABLE IF EXISTS reward_picked;
 DROP TABLE IF EXISTS card_discarded;
 DROP TABLE IF EXISTS card_played;
 DROP TABLE IF EXISTS card_drew;
@@ -226,17 +227,17 @@ CREATE TABLE IF NOT EXISTS card_discarded(
     CONSTRAINT FK_card_discarded_card_drew FOREIGN KEY (card_uuid) REFERENCES card_drew(card_uuid)
 );
 
-CREATE TABLE IF NOT EXISTS picked_reward(
+CREATE TABLE IF NOT EXISTS reward_picked(
 	event_uuid BINARY(16) DEFAULT (UUID_TO_BIN(UUID())),
     event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
     session_uuid BINARY(16),
     game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     card_uuid BINARY(16),
-    CONSTRAINT PK_picked_reward PRIMARY KEY (event_uuid),
-    CONSTRAINT FK_picked_reward_session_launched FOREIGN KEY (session_uuid) REFERENCES session_launched(session_uuid),
-    CONSTRAINT FK_picked_reward_chapter_revealed FOREIGN KEY (game_uuid, chapter_index) REFERENCES chapter_revealed(game_uuid, chapter_index),
-    CONSTRAINT FK_picked_reward_card FOREIGN KEY (card_uuid) REFERENCES card(uuid)
+    CONSTRAINT PK_reward_picked PRIMARY KEY (event_uuid),
+    CONSTRAINT FK_reward_picked_session_launched FOREIGN KEY (session_uuid) REFERENCES session_launched(session_uuid),
+    CONSTRAINT FK_reward_picked_chapter_revealed FOREIGN KEY (game_uuid, chapter_index) REFERENCES chapter_revealed(game_uuid, chapter_index),
+    CONSTRAINT FK_reward_picked_card FOREIGN KEY (card_uuid) REFERENCES card(uuid)
 );
 
 CREATE TABLE IF NOT EXISTS player_death(
@@ -260,6 +261,18 @@ CREATE TABLE IF NOT EXISTS player_cheated(
     cheat_type ENUM("HideCard","GiveCard","ChangeDice"),
     CONSTRAINT PK_player_cheated PRIMARY KEY (event_uuid),
     CONSTRAINT FK_player_cheated_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
+);
+
+CREATE TABLE IF NOT EXISTS cheat_detected(
+	event_uuid BINARY(16) DEFAULT (UUID_TO_BIN(UUID())),
+	event_time TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP(3),
+    session_uuid BINARY(16),
+    game_uuid BINARY(16),
+    chapter_index TINYINT UNSIGNED,
+    turn_index TINYINT UNSIGNED,
+    cheat_type ENUM("HideCard","GiveCard","ChangeDice"),
+    CONSTRAINT PK_cheat_detected PRIMARY KEY (event_uuid),
+    CONSTRAINT FK_cheat_detected_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
 );
 
 CREATE TABLE IF NOT EXISTS camera_swapped(
