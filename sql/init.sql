@@ -1,0 +1,71 @@
+CREATE TABLE IF NOT EXISTS device_register(
+    device_id CHAR(40),
+    device_model VARCHAR(128),
+    device_name VARCHAR(128),
+    operating_system VARCHAR(128),
+    graphics_name VARCHAR(128),
+    graphics_version VARCHAR(128),
+    graphics_memory INT,
+    processor_type VARCHAR(128),
+    processor_count INT,
+    processor_frequency INT,
+    memory_size INT,
+    screen_width INT,
+    screen_height INT,
+    register_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    last_update TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
+    notes VARCHAR(256),
+    CONSTRAINT PK_device_register PRIMARY KEY (device_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS game_event(
+    event_name ENUM(
+        "session_start",
+        "session_end",
+        "lobby_create",
+        "lobby_join",
+        "game_start",
+        "game_end",
+        "chapter_reveal",
+        "chapter_resolve",
+        "reward_pick",
+        "player_begin_turn",
+        "player_end_turn",
+        "player_die",
+        "card_draw",
+        "card_play",
+        "card_discard",
+        "card_dump",
+        "cheat_health_dice",
+        "cheat_armor_dice",
+        "cheat_draw",
+        "cheat_hide",
+        "cheat_detect"
+    ),
+    event_uuid BINARY(16) DEFAULT (UUID_TO_BIN(UUID())),
+    event_time TIMESTAMP(3),
+    game_time TIME(3),
+    user_uuid BINARY(16),
+    device_id VARCHAR(40),
+    dev_build BOOLEAN,
+    ip VARCHAR(18),
+    port INT,
+    game_uuid BINARY(16),
+    chapter_name VARCHAR(128),
+    card_name VARCHAR(128),
+    player_class VARCHAR(32),
+    health_value TINYINT UNSIGNED,
+    armor_value TINYINT UNSIGNED,
+    action_count TINYINT UNSIGNED,
+    action_used TINYINT UNSIGNED,
+    initial_health_value TINYINT UNSIGNED,
+    initial_armor_value TINYINT UNSIGNED,
+    initial_card_amount TINYINT UNSIGNED,
+    cheat VARCHAR(128),
+    CONSTRAINT PK_game_event 
+        PRIMARY KEY (event_uuid),
+    CONSTRAINT FK_event_device
+        FOREIGN KEY (device_id)
+        REFERENCES device_register(device_id)
+);

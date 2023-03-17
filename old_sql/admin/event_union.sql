@@ -33,4 +33,5 @@ FROM (
 	UNION
 	SELECT event_uuid, event_time, "Player death" AS event_type FROM player_death
 ) AS `Events`
+WHERE event_time BETWEEN "2023-02-03 12:00:00" AND "2023-02-03 15:30:00"
 ORDER BY event_time DESC;

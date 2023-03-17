@@ -35,18 +35,21 @@ FROM (
 		LEFT OUTER JOIN (
 			SELECT card_uuid, COUNT(*) AS count
 			FROM card_drew
+            WHERE event_time BETWEEN "2023-02-03 12:00:00" AND "2023-02-03 15:30:00"
 			GROUP BY card_uuid
 		) AS table_count_drew
 		ON table_count_drew.card_uuid = card.uuid
 		LEFT OUTER JOIN (
 			SELECT card_uuid, COUNT(*) AS count
 			FROM card_played
+            WHERE event_time BETWEEN "2023-02-03 12:00:00" AND "2023-02-03 15:30:00"
 			GROUP BY card_uuid
 		) AS table_count_play
 		ON table_count_play.card_uuid = card.uuid
 		LEFT OUTER JOIN (
 			SELECT card_uuid, COUNT(*) AS count
 			FROM card_discarded
+            WHERE event_time BETWEEN "2023-02-03 12:00:00" AND "2023-02-03 15:30:00"
 			GROUP BY card_uuid
 		) AS table_count_discard
 		ON table_count_discard.card_uuid = card.uuid

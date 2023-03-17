@@ -17,7 +17,7 @@ DROP TABLE IF EXISTS game_stopped;
 DROP TABLE IF EXISTS game_started;
 DROP TABLE IF EXISTS session_exited;
 DROP TABLE IF EXISTS session_launched;
-DROP TABLE IF EXISTS device_register;
+-- DROP TABLE IF EXISTS device_register;
 
 DROP TABLE IF EXISTS card;
 DROP TABLE IF EXISTS enemy;
@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS player_cheated(
     game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
-    cheat_type ENUM("HideCard","GiveCard","ChangeDice"),
+    cheat_type ENUM("HideCard","GiveCard","DrawCard","ChangeDice"),
     CONSTRAINT PK_player_cheated PRIMARY KEY (event_uuid),
     CONSTRAINT FK_player_cheated_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
 );
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS cheat_detected(
     game_uuid BINARY(16),
     chapter_index TINYINT UNSIGNED,
     turn_index TINYINT UNSIGNED,
-    cheat_type ENUM("HideCard","GiveCard","ChangeDice"),
+    cheat_type ENUM("HideCard","GiveCard","DrawCard","ChangeDice"),
     CONSTRAINT PK_cheat_detected PRIMARY KEY (event_uuid),
     CONSTRAINT FK_cheat_detected_player_turn FOREIGN KEY (game_uuid, session_uuid, chapter_index, turn_index) REFERENCES player_turn(game_uuid, session_uuid, chapter_index, turn_index)
 );
