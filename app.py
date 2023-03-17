@@ -54,7 +54,7 @@ def insert_device(data):
             "screen_width": data["screen_width"],
             "screen_height": data["screen_height"],
         }
-        query = read_query_from_file("Sql/device_register.sql",values)
+        query = read_query_from_file("sql/device_register.sql",values)
         cursor.execute(query)
         database.connection.commit()
 
