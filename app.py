@@ -65,7 +65,7 @@ def insert_event(event,data):
     
     if "event_time" in data:
         parameters += "event_time, "
-        values += f"STR_TO_DATE(\"{data['event_time']}\",\"%Y-%m-%d %T\"), "
+        values += f"STR_TO_DATE(\"{data['event_time']}\",\"%Y-%m-%d %H:%i:%S.%f\"), "
         
     if "game_time" in data:
         parameters += "game_time, "
