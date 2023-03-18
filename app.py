@@ -65,7 +65,7 @@ def insert_event(event,data):
     
     if "event_time" in data:
         parameters += "event_time, "
-        values += f"\"{data['event_time']}\", "
+        values += f"{data['event_time']}, "
         
     if "game_time" in data:
         parameters += "game_time, "
