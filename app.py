@@ -78,7 +78,11 @@ def insert_event(event,data):
     if "device_id" in data:
         parameters += "device_id, "
         values += f"\"{data['device_id']}\", "
-        
+    
+    if "game_version" in data:
+        parameters += "game_version, "
+        values += f"\"{data['game_version']}\", "
+    
     if "dev_build" in data:
         parameters += "dev_build, "
         values += f"\"{data['dev_build']}\", "
