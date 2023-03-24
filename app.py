@@ -107,6 +107,10 @@ def insert_event(event,data):
         parameters += "card_name, "
         values += f"\"{data['card_name']}\", "
         
+    if "card_modifier" in data:
+        parameters += "card_modifier, "
+        values += f"\"{data['card_modifier']}\", "
+        
     if "player_class" in data:
         parameters += "player_class, "
         values += f"\"{data['player_class']}\", "
