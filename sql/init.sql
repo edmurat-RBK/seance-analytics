@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS game_event(
     chapter_name VARCHAR(128),
     card_name VARCHAR(128),
     card_modifier INT,
+    effect_id INT,
     player_class VARCHAR(32),
     health_value TINYINT UNSIGNED,
     armor_value TINYINT UNSIGNED,
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS game_event(
     initial_health_value TINYINT UNSIGNED,
     initial_armor_value TINYINT UNSIGNED,
     initial_card_amount TINYINT UNSIGNED,
-    cheat VARCHAR(128),
+    cheat_type VARCHAR(128),
     CONSTRAINT PK_game_event 
         PRIMARY KEY (event_uuid),
     CONSTRAINT FK_event_device

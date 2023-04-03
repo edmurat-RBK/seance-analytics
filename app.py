@@ -85,7 +85,7 @@ def insert_event(event,data):
     
     if "dev_build" in data:
         parameters += "dev_build, "
-        values += f"\"{data['dev_build']}\", "
+        values += f"{data['dev_build']}, "
         
     if "ip" in data:
         parameters += "ip, "
@@ -109,8 +109,12 @@ def insert_event(event,data):
         
     if "card_modifier" in data:
         parameters += "card_modifier, "
-        values += f"\"{data['card_modifier']}\", "
+        values += f"{data['card_modifier']}, "
         
+    if "effect_id" in data:
+        parameters += "effect_id, "
+        values += f"{data['effect_id']}, "    
+    
     if "player_class" in data:
         parameters += "player_class, "
         values += f"\"{data['player_class']}\", "
@@ -143,9 +147,9 @@ def insert_event(event,data):
         parameters += "initial_card_amount, "
         values += f"{data['initial_card_amount']}, "
     
-    if "cheat" in data:
-        parameters += "cheat, "
-        values += f"\"{data['cheat']}\", "
+    if "cheat_type" in data:
+        parameters += "cheat_type, "
+        values += f"\"{data['cheat_type']}\", "
     
     with database.connection.cursor() as cursor:
         query = f"INSERT INTO game_event({parameters[:-2]}) VALUES ({values[:-2]});"
