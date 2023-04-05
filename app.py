@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, Response, request
 from flask_mysqldb import MySQL
 
 
@@ -35,6 +35,47 @@ def read_query_from_file(path, kwargs = {}):
         query = file.read()
         query = query.format(**kwargs)
     return query
+
+
+def select_event():
+    with database.connection.cursor() as cursor:
+        query = f"""
+            SELECT
+                event_name AS `Event name`,
+                BIN_TO_UUID(event_uuid) AS `Event UUID`,
+                event_time AS `Event time`,
+                game_time AS `Session time`,
+                BIN_TO_UUID(user_uuid) AS `User UUID`,
+                device_id AS `Device ID`,
+                game_version AS `Game version`,
+                dev_build AS `Dev build`,
+                ip AS `IP`,
+                port AS `Port`,
+                BIN_TO_UUID(game_uuid) AS `Game UUID`,
+                chapter_name AS `Chapter name`,
+                card_name AS `Card name`,
+                card_modifier AS `Card modifier`,
+                effect_id AS `Effect ID`,
+                player_class AS `Player class`,
+                health_value AS `Health value`,
+                armor_value AS `Armor value`,
+                action_count AS `Action count`,
+                action_used AS `Action used`,
+                initial_health_value AS `Initial health value`,
+                initial_armor_value AS `Initial armor value`,
+                initial_card_amount AS `Initial card amount`,
+                cheat_type AS `Cheat type`
+            FROM game_event
+            WHERE event_time >= DATE_SUB(CURRENT_DATE(), INTERVAL 14 DAY)
+            ORDER BY event_time DESC
+            LIMIT 10;
+        """
+        cursor.execute(query)
+        table = cursor.fetchall()
+        str_output = "; ".join([s[0] for s in cursor.description]) + "\n"
+        for line in table:
+            str_output += "; ".join([str(v) for v in line]) + "\n"
+        return str_output
 
 
 def insert_device(data):
@@ -191,6 +232,14 @@ def endpoint_register_event(version,event):
         else:
             return "Unknown version"
 
+
+@app.route('/<version>/event', methods=['GET'])
+def endpoint_get_events(version):
+    if request.method == "GET":
+        if version == "v1":
+            return Response(select_event(), mimetype='text/csv')
+        else:
+            return "Unknown version"
 
 
 if __name__ == "__main__":
