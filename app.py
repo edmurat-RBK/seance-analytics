@@ -51,6 +51,7 @@ def select_event():
                 dev_build AS `Dev build`,
                 ip AS `IP`,
                 port AS `Port`,
+                username AS `Username`,
                 BIN_TO_UUID(game_uuid) AS `Game UUID`,
                 chapter_name AS `Chapter name`,
                 card_name AS `Card name`,
@@ -135,6 +136,10 @@ def insert_event(event,data):
     if "port" in data:
         parameters += "port, "
         values += f"\"{data['port']}\", "
+       
+    if "username" in data:
+        parameters += "username, "
+        values += f"\"{data['username']}\", "
         
     if "game_uuid" in data:
         parameters += "game_uuid, "

@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS game_event(
     dev_build BOOLEAN,
     ip VARCHAR(18),
     port INT,
+    username VARCHAR(32),
     game_uuid BINARY(16),
     chapter_name VARCHAR(128),
     card_name VARCHAR(128),
