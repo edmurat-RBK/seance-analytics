@@ -67,9 +67,8 @@ def select_event():
                 initial_card_amount AS `Initial card amount`,
                 cheat_type AS `Cheat type`
             FROM game_event
-            WHERE event_time >= DATE_SUB(CURRENT_DATE(), INTERVAL 14 DAY)
-            ORDER BY event_time DESC
-            LIMIT 10;
+            WHERE event_time >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
+            ORDER BY event_time DESC;
         """
         cursor.execute(query)
         table = cursor.fetchall()
@@ -243,6 +242,15 @@ def endpoint_get_events(version):
     if request.method == "GET":
         if version == "v1":
             return Response(select_event(), mimetype='text/csv')
+        else:
+            return "Unknown version"
+
+
+@app.route('/<version>/event/display', methods=['GET'])
+def endpoint_get_events_display(version):
+    if request.method == "GET":
+        if version == "v1":
+            return Response(select_event(), mimetype='application/json')
         else:
             return "Unknown version"
 
